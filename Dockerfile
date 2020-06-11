@@ -11,7 +11,6 @@ RUN curl -Lo go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p $GOPATH/src $GOPATH/bin && chmod -R 777 $GOPATH
-WORKDIR $GOPATH
 
 # install bazel
 ENV BAZEL_VERSION 1.1.0
@@ -25,8 +24,8 @@ RUN apt install -y libprotobuf-dev protobuf-compiler
 RUN go get -d github.com/tensorflow/tensorflow/tensorflow/go; exit 0
 RUN pip3 install -U pip six numpy wheel setuptools mock && link /usr/bin/python3 /usr/bin/python
 RUN cd ${GOPATH}/src/github.com/tensorflow/tensorflow && \
-    git checkout v2.1.0  
-RUN ./configure && bazel build --jobs=1 -c opt  //tensorflow:libtensorflow.so
+    git checkout v2.1.0  && \
+    ./configure && bazel build --jobs=1 -c opt  //tensorflow:libtensorflow.so
 
 ENV LD_LIBRARY_PATH ${GOPATH}/src/github.com/tensorflow/tensorflow/bazel-bin/tensorflow
 ENV LIBRARY_PATH ${GOPATH}/src/github.com/tensorflow/tensorflow/bazel-bin/tensorflow
@@ -34,4 +33,6 @@ ENV LIBRARY_PATH ${GOPATH}/src/github.com/tensorflow/tensorflow/bazel-bin/tensor
 # build tensorflow go
 RUN go generate github.com/tensorflow/tensorflow/tensorflow/go/op; exit 0 
 RUN go test github.com/tensorflow/tensorflow/tensorflow/go; exit 0
+
+WORKDIR ${GOPATH}
 

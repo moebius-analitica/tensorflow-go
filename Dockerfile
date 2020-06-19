@@ -32,7 +32,10 @@ ENV LIBRARY_PATH ${GOPATH}/src/github.com/tensorflow/tensorflow/bazel-bin/tensor
 
 # build tensorflow go
 RUN go generate github.com/tensorflow/tensorflow/tensorflow/go/op; exit 0 
-RUN go test github.com/tensorflow/tensorflow/tensorflow/go; exit 0
+RUN go test github.com/tensorflow/tensorflow/tensorflow/go
 
 WORKDIR ${GOPATH}
+
+COPY hello_tf.go ${GOPATH}/
+RUN go run hello_tf.go
 
